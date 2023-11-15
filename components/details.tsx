@@ -8,13 +8,6 @@ import {
   Input,
   Stack,
   useColorModeValue,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  useDisclosure,
   Textarea,
   HStack,
 } from '@chakra-ui/react'
@@ -23,6 +16,8 @@ import { useCallback, useEffect, useState } from "react";
 import { type Doc, initJuno, setDoc, getDoc} from "@junobuild/core-peer";
 import {User} from "./types"
 import {useRouter} from "next/router"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type Record = {
   name : string,
@@ -35,12 +30,7 @@ type Record = {
 
 const Details = () => {
     const [, setRecord] = useState<Doc<Record> | undefined>(undefined);
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [alert, setAlert] = useState({
-      show: false,
-      status: 'success',
-      message: ''
-     });
+
     const [user, setUser] = useState<User>({
       username:'',
       name: '',
@@ -57,12 +47,7 @@ const Details = () => {
         initJuno({
             satelliteId: "xqne3-5aaaa-aaaal-adcpq-cai"
         })
-        if (alert.show) {
-          setTimeout(() => {
-            setAlert({ show: false, status: '', message: '' });
-          }, 5000); // 5 seconds
-        }
-    },[alert])
+    },[])
 
     const checkUsername = useCallback(async (username: string) => {
       try {
@@ -108,15 +93,33 @@ const Details = () => {
               });
           
               setRecord(doc);
+              toast.success('successfully submitted!', {
+                position: "bottom-left",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                });
               router.push(`/${user.username}`)
               console.log(`submitted Successfully ${doc}`)
             
         } catch (error) {
-          onOpen();
-          setAlert({ show: true, status: 'error', message: 'Not submitted try again later...' });
+          toast.error(`error can be username already exists or this ${error}`, {
+            position: "bottom-left",
+            autoClose: 7000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
           console.log(`error while submitting the doc.......${error}`)
         }
-    },[user, onOpen, router]);
+    },[user, router]);
 
   return (
     <Flex
@@ -267,21 +270,7 @@ const Details = () => {
           </Button>
         </Stack>
       </Stack>
-     <AlertDialog isOpen={isOpen} onClose={onClose} >
-      <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader>Alert</AlertDialogHeader>
-          <AlertDialogBody>
-            {alert.message}
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button colorScheme="blue" onClick={onClose}>
-              Close
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
-      </AlertDialog>
+      <ToastContainer />
     </Flex>
   )
 }
