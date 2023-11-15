@@ -1,4 +1,5 @@
 export interface User {
+    username : string,
     name : string,
     github_url ?: string;
     linkedin_url ?: string;

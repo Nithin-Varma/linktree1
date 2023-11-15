@@ -8,12 +8,20 @@ import {
   Input,
   Stack,
   useColorModeValue,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
 } from '@chakra-ui/react'
-import { useEffect, useState } from "react";
-import { type Doc, initJuno, setDoc } from "@junobuild/core-peer";
-import { v4 as uuidv4 } from 'uuid';
-import { signIn } from "@junobuild/core-peer";
+
+import { useCallback, useEffect, useState } from "react";
+import { type Doc, initJuno, setDoc, getDoc} from "@junobuild/core-peer";
 import {User} from "./types"
+import {useRouter} from "next/router"
+import { signOut } from "@junobuild/core-peer";
 
 type Record = {
   name : string,
@@ -25,35 +33,68 @@ type Record = {
 };
 
 const Details = () => {
-    const [record, setRecord] = useState<Doc<Record> | undefined>(undefined);
-    const [user, setUser] = useState<User>({} as User);
-
-    // const unsub = authSubscribe((user) => {
-    //   console.log("User:", user);
-    // });
-    const signin = async() => {
-      await signIn();
+    const [, setRecord] = useState<Doc<Record> | undefined>(undefined);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [alert, setAlert] = useState({
+      show: false,
+      status: 'success',
+      message: ''
+     });
+    const [user, setUser] = useState<User>({
+      username:'',
+      name: '',
+      github_url: '',
+      linkedin_url: '',
+      twitter_url: '',
+      medium_url: '',
+      district_url: ''
+    });
+    const router = useRouter();
+    const signout = async() => {
+      await signOut();
     }
-  
-    // useEffect(() => {
-    //   (async () =>
-    //     await initJuno({
-    //       satelliteId: "xqne3-5aaaa-aaaal-adcpq-cai",
-    //     }))();
-    // },[]);
 
     useEffect(() => {
         initJuno({
             satelliteId: "xqne3-5aaaa-aaaal-adcpq-cai"
         })
-    })
+        if (alert.show) {
+          setTimeout(() => {
+            setAlert({ show: false, status: '', message: '' });
+          }, 5000); // 5 seconds
+        }
+    },[alert])
 
-    const insert = async () => {
+    const checkUsername = useCallback(async (username: string) => {
+      try {
+          const doc = await getDoc({
+              collection: "links",
+              key: username
+          });
+          return doc !== null;
+      } catch (error) {
+          console.log(`error while checking username.......${error}`);
+          return false;
+      }
+  },[]);
+
+  const handleUsernameChange = async (e: any) => {
+      const username = e.target.value;
+      setUser({
+          ...user,
+          username: username
+      });
+      if (await checkUsername(username)) {
+          console.log("username taken")
+      }
+  };
+
+    const insert = useCallback(async () => {
         try {
             const doc = await setDoc({
                 collection: "links",
                 doc: {
-                  key: uuidv4(),
+                  key: user.username,
                   data: {
                     name: user.name,
                     github_url : user.github_url,
@@ -67,12 +108,15 @@ const Details = () => {
               });
           
               setRecord(doc);
+              router.push(`/${user.username}`)
               console.log(`submitted Successfully ${doc}`)
             
         } catch (error) {
-            console.log(`error while submitting the doc.......${error}`)
+          onOpen();
+          setAlert({ show: true, status: 'error', message: 'Not submitted try again later...' });
+          console.log(`error while submitting the doc.......${error}`)
         }
-    };
+    },[user, onOpen, router]);
 
   return (
     <Flex
@@ -89,10 +133,20 @@ const Details = () => {
         boxShadow={'lg'}
         p={6}
         my={12}>
-        <FormControl id="userName" isRequired>
-          <FormLabel>User name</FormLabel>
+        <FormControl id="linktree_username" isRequired>
+          <FormLabel>LinkTree username</FormLabel>
           <Input
             placeholder="UserName"
+            _placeholder={{ color: 'gray.500' }}
+            type="text"
+            value={user.username}
+            onChange={handleUsernameChange}
+          />
+        </FormControl>
+        <FormControl id="fullName" isRequired>
+          <FormLabel>Full Name</FormLabel>
+          <Input
+            placeholder="Full Name"
             _placeholder={{ color: 'gray.500' }}
             type="text"
             value={user.name}
@@ -121,7 +175,7 @@ const Details = () => {
         <FormControl id="linkedin" isRequired>
           <FormLabel>LinkedIn</FormLabel>
           <Input
-            placeholder="your-email@example.com"
+            placeholder="LinkedIn URL"
             _placeholder={{ color: 'gray.500' }}
             value={user.linkedin_url}
             onChange={(e) => {
@@ -179,16 +233,6 @@ const Details = () => {
         </FormControl>
         <Stack spacing={6} direction={['column', 'row']}>
           <Button
-            bg={'red.400'}
-            color={'white'}
-            w="full"
-            _hover={{
-              bg: 'red.500',
-            }}
-            >
-            Cancel
-          </Button>
-          <Button
             bg={'blue.400'}
             color={'white'}
             w="full"
@@ -201,7 +245,28 @@ const Details = () => {
           </Button>
         </Stack>
       </Stack>
-      <Button onClick={signin}>SignIn</Button>
+      {/* {alert.show && (
+      <Alert status={alert.status as "success" | "error" | "info" | "warning" | "loading"}>
+        <AlertIcon />
+        <AlertTitle>{alert.message}</AlertTitle>
+        <AlertDescription>Please try again.</AlertDescription>
+      </Alert>
+     )} */}
+     <AlertDialog isOpen={isOpen} onClose={onClose}>
+      <AlertDialogOverlay>
+        <AlertDialogContent>
+          <AlertDialogHeader>Alert</AlertDialogHeader>
+          <AlertDialogBody>
+            {alert.message}
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button colorScheme="blue" onClick={onClose}>
+              Close
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogOverlay>
+      </AlertDialog>
     </Flex>
   )
 }
