@@ -36,7 +36,7 @@ export default function Nav() {
     <>
       <Box bg={useColorModeValue("gray.100", "gray.900")} position="fixed" px={4} w={"100%"}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <Box>Logo</Box>
+          <Box fontSize={"28px"} fontWeight={"bold"} fontFamily={"cursive"}>AzadNet</Box>
 
           <Flex alignItems={"center"}>
             <Stack direction={"row"} spacing={7}>

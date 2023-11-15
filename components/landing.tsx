@@ -5,7 +5,6 @@ import {
   Heading,
   Container,
   Text,
-  Button,
   Stack,
 } from '@chakra-ui/react'
 // import { useRouter } from 'next/router';
@@ -49,19 +48,15 @@ export default function Landing() {
             align={'center'}
             alignSelf={'center'}
             position={'relative'}>
-            <Button
+            <Text
               colorScheme={'green'}
               bg={'green.400'}
-              rounded={'full'}
-              px={6}
+              p={4}
               _hover={{
                 bg: 'green.500',
               }}>
-              Login and Get Started
-            </Button>
-            <Button variant={'link'} colorScheme={'blue'} size={'sm'}>
-              Learn more
-            </Button>
+              Login to get Started
+            </Text>
           </Stack>
         </Stack>
       </Container>

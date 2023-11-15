@@ -15,6 +15,8 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   useDisclosure,
+  Textarea,
+  HStack,
 } from '@chakra-ui/react'
 
 import { useCallback, useEffect, useState } from "react";
@@ -42,11 +44,12 @@ const Details = () => {
     const [user, setUser] = useState<User>({
       username:'',
       name: '',
+      description: '',
       github_url: '',
       linkedin_url: '',
       twitter_url: '',
       medium_url: '',
-      district_url: ''
+      distrikt_url: ''
     });
     const router = useRouter();
 
@@ -93,11 +96,12 @@ const Details = () => {
                   key: user.username,
                   data: {
                     name: user.name,
+                    description: user.description,
                     github_url : user.github_url,
                     linkedin_url : user.linkedin_url,
                     twitter_url : user.twitter_url,
                     medium_url : user.medium_url,
-                    district_url : user.district_url
+                    district_url : user.distrikt_url
                   },
                 },
           
@@ -119,6 +123,7 @@ const Details = () => {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
+      w={'full'}
       paddingTop={"12"}
       bg={useColorModeValue('gray.50', 'gray.800')}>
       <Stack
@@ -130,6 +135,7 @@ const Details = () => {
         boxShadow={'lg'}
         p={6}
         my={12}>
+        <HStack  spacing={"12"}>
         <FormControl id="linktree_username" isRequired>
           <FormLabel>LinkTree username</FormLabel>
           <Input
@@ -155,6 +161,8 @@ const Details = () => {
             }}
           />
         </FormControl>
+        </HStack>
+        <HStack spacing={"12"}>
         <FormControl id="github" isRequired>
           <FormLabel>Github</FormLabel>
           <Input
@@ -183,6 +191,8 @@ const Details = () => {
             }} 
           />
         </FormControl>
+        </HStack>
+        <HStack spacing={"12"}>
         <FormControl id="twitter" isRequired>
           <FormLabel>twitter</FormLabel>
           <Input
@@ -213,17 +223,32 @@ const Details = () => {
             }}
           />
         </FormControl>
-        <FormControl id="district" isRequired>
-          <FormLabel>district</FormLabel>
+        </HStack>
+        <FormControl id="distrikt" isRequired>
+          <FormLabel>distrikt</FormLabel>
           <Input
             placeholder="district"
             _placeholder={{ color: 'gray.500' }}
             type="text"
-            value={user.district_url}
+            value={user.distrikt_url}
             onChange={(e) => {
                 setUser({
                     ...user,
-                    district_url: e.target.value
+                    distrikt_url: e.target.value
+                })
+            }}
+          />
+        </FormControl>
+        <FormControl id="description" isRequired>
+          <FormLabel>description</FormLabel>
+          <Textarea
+            placeholder="description"
+            _placeholder={{ color: 'gray.500' }}
+            value={user.description}
+            onChange={(e) => {
+                setUser({
+                    ...user,
+                    description: e.target.value
                 })
             }}
           />
@@ -242,14 +267,7 @@ const Details = () => {
           </Button>
         </Stack>
       </Stack>
-      {/* {alert.show && (
-      <Alert status={alert.status as "success" | "error" | "info" | "warning" | "loading"}>
-        <AlertIcon />
-        <AlertTitle>{alert.message}</AlertTitle>
-        <AlertDescription>Please try again.</AlertDescription>
-      </Alert>
-     )} */}
-     <AlertDialog isOpen={isOpen} onClose={onClose}>
+     <AlertDialog isOpen={isOpen} onClose={onClose} >
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader>Alert</AlertDialogHeader>
