@@ -13,6 +13,7 @@ export default function Template({data}: {data: User}) {
             bg={useColorModeValue('white', 'gray.800')}
             boxShadow={'2xl'}
             rounded={'md'}
+            marginTop={"16"}
             overflow={'hidden'}>
             <Box p={6}>
               <Stack spacing={0} align={'center'} mb={5}>

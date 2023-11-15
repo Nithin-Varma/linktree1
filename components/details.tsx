@@ -21,7 +21,6 @@ import { useCallback, useEffect, useState } from "react";
 import { type Doc, initJuno, setDoc, getDoc} from "@junobuild/core-peer";
 import {User} from "./types"
 import {useRouter} from "next/router"
-import { signOut } from "@junobuild/core-peer";
 
 type Record = {
   name : string,
@@ -50,9 +49,6 @@ const Details = () => {
       district_url: ''
     });
     const router = useRouter();
-    const signout = async() => {
-      await signOut();
-    }
 
     useEffect(() => {
         initJuno({
@@ -123,6 +119,7 @@ const Details = () => {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
+      paddingTop={"12"}
       bg={useColorModeValue('gray.50', 'gray.800')}>
       <Stack
         spacing={4}

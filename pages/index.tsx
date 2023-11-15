@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { initJuno } from "@junobuild/core-peer";  
 // import Details from "../components/details";
-import Nav from "../components/navbar"
+// import Nav from "../components/navbar"
 import Landing from "../components/landing";
 
 export default function Home() {
@@ -24,7 +24,7 @@ export default function Home() {
 
   return (
     <>
-      <Nav />
+      {/* <Nav /> */}
       <Landing />
     </>
   );

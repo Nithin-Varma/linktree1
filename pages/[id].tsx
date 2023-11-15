@@ -5,7 +5,7 @@ import { getTheData } from '../components/linkdata';
 import { User } from '../components/types'; 
 import { Box } from '@chakra-ui/react';
 import { initJuno} from "@junobuild/core-peer";  
-import Nav from '../components/navbar';
+// import Nav from '../components/navbar';
 // import { signIn, signOut, authSubscribe } from "@junobuild/core";
 
 
@@ -31,7 +31,7 @@ const UserDetails = () => {
   
   return (
     <>
-      <Nav />
+      {/* <Nav /> */}
       <Box>
         {data ? (
           <Template data={data} />
