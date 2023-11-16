@@ -10,23 +10,43 @@ import {
   useColorMode
 } from "@chakra-ui/react"
 import { MoonIcon, SunIcon } from "@chakra-ui/icons"
-import { signIn, signOut, initJuno } from "@junobuild/core-peer"
+import { signIn, signOut, initJuno, authSubscribe } from "@junobuild/core-peer"
 import { useState, useEffect } from "react"
-import { useRouter } from "next/router"
+// import { useRouter } from "next/router"
 // import { User } from "@junobuild/core"
+
+// function extractLastText(url: string) {
+//   const regex = /\/([^\/]+)$/;
+//   const match = regex.exec(url);
+
+//   if (match) {
+//       return match[1];
+//   } else {
+//       return null;
+//   }
+// }
 
 export default function Nav() {
   const { colorMode, toggleColorMode } = useColorMode()
   const [isSignedIn, setIsSignedIn] = useState(false)
   // const [user, setUser] = useState<User | null>()
   //   const { isOpen, onOpen, onClose } = useDisclosure()
-  const router = useRouter()
+  // const router = useRouter()
 
   useEffect(() => {
     initJuno({
       satelliteId: "xqne3-5aaaa-aaaal-adcpq-cai"
     })
-
+    const isSignedIn = localStorage.getItem('isSignedIn')
+    if (isSignedIn === 'true') {
+      setIsSignedIn(true)
+    } else {
+      setIsSignedIn(false)
+    }
+    authSubscribe(user => {
+      console.log(user)
+    })
+    // const link = extractLastText(window.location.href)
   }, [])
   // authSubscribe(user => {
   //   setUser(user)
@@ -47,8 +67,10 @@ export default function Nav() {
                 <Button
                   onClick={async () => {
                     await signOut()
-                    router.push("/")
+                    // router.push("/")
+                    window.location.href = "/"
                     setIsSignedIn(false)
+                    localStorage.removeItem('isSignedIn')
                   }}
                 >
                   SignOut
@@ -56,9 +78,14 @@ export default function Nav() {
               ) : (
                 <Button
                   onClick={async () => {
-                    await signIn()
-                    router.push("/detailspage")
+                    if(window.location.href !== "/") {
+                      await signIn()
+                    } else {
+                      await signIn()
+                      window.location.href = "/detailspage"
+                    }
                     setIsSignedIn(true)
+                    localStorage.setItem('isSignedIn', 'true') 
                   }}
                 >
                   SignIn
