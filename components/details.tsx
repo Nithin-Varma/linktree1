@@ -10,13 +10,14 @@ import {
   useColorModeValue,
   Textarea,
   HStack,
+  useToast,
+  Spinner
 } from '@chakra-ui/react'
 
 import { useCallback, useEffect, useState } from "react";
 import { type Doc, initJuno, setDoc, getDoc} from "@junobuild/core-peer";
 import {User} from "./types"
 import {useRouter} from "next/router"
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 type Record = {
@@ -30,6 +31,8 @@ type Record = {
 
 const Details = () => {
     const [, setRecord] = useState<Doc<Record> | undefined>(undefined);
+    const [loading, setLoading] = useState(false)
+    const toast = useToast()
 
     const [user, setUser] = useState<User>({
       username:'',
@@ -74,6 +77,7 @@ const Details = () => {
   };
 
     const insert = useCallback(async () => {
+      setLoading(true)
         try {
             const doc = await setDoc({
                 collection: "links",
@@ -93,33 +97,29 @@ const Details = () => {
               });
           
               setRecord(doc);
-              toast.success('successfully submitted!', {
-                position: "bottom-left",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                });
+              toast({
+                title: "File uploaded.",
+                description: "Your file has been successfully uploaded.",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+              });
               router.push(`/${user.username}`)
               console.log(`submitted Successfully ${doc}`)
             
         } catch (error) {
-          toast.error(`error can be username already exists or this ${error}`, {
-            position: "bottom-left",
-            autoClose: 7000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            });
+          toast({
+            title: "File upload failed.",
+            description: "There was an error uploading your file.",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
           console.log(`error while submitting the doc.......${error}`)
+        } finally{
+          setLoading(false)
         }
-    },[user, router]);
+    },[user,toast, router]);
 
   return (
     <Flex
@@ -266,11 +266,10 @@ const Details = () => {
             }}
             onClick={insert}
             >
-            Submit
+            {loading ? <Spinner /> : "Submit"}
           </Button>
         </Stack>
       </Stack>
-      <ToastContainer />
     </Flex>
   )
 }

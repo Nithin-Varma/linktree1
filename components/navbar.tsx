@@ -7,7 +7,8 @@ import {
   //   useDisclosure,
   useColorModeValue,
   Stack,
-  useColorMode
+  useColorMode,
+  HStack
 } from "@chakra-ui/react"
 import { MoonIcon, SunIcon } from "@chakra-ui/icons"
 import { signIn, signOut, initJuno, authSubscribe } from "@junobuild/core-peer"
@@ -64,17 +65,26 @@ export default function Nav() {
                 {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
               </Button>
               {isSignedIn ? (
-                <Button
-                  onClick={async () => {
-                    await signOut()
-                    // router.push("/")
-                    window.location.href = "/"
-                    setIsSignedIn(false)
-                    localStorage.removeItem('isSignedIn')
+                <HStack spacing={6}>
+                  <Button
+                    onClick={async () => {
+                      await signOut()
+                      // router.push("/")
+                      window.location.href = "/"
+                      setIsSignedIn(false)
+                      localStorage.removeItem('isSignedIn')
+                    }}
+                  >
+                    SignOut
+                  </Button>
+                  <Button
+                  onClick={() => {
+                    window.location.href = "/detailspage"
                   }}
                 >
-                  SignOut
+                  Start
                 </Button>
+                </HStack>
               ) : (
                 <Button
                   onClick={async () => {
